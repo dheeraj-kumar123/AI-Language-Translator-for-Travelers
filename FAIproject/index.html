@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Translator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-light: #edf2ff;
+            --text: #2b2d42;
+            --text-light: #8d99ae;
+            --background: #f8f9fa;
+            --surface: #ffffff;
+            --border: #e9ecef;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --transition: all 0.2s ease;
+            --grid-color: rgba(67, 97, 238, 0.08);
+            --container-bg: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            padding: 24px;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            /* Enhanced grid background */
+            background-color: var(--background);
+            background-image: 
+                linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: center center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--container-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid rgba(67, 97, 238, 0.1);
+        }
+
+        /* Rest of your existing CSS remains the same */
+        .translator-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            background: rgba(67, 97, 238, 0.03);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            background: linear-gradient(90deg, #4361ee, #3a56e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        .content {
+            padding: 24px;
+            display: grid;
+            gap: 24px;
+        }
+
+        .text-area {
+            display: grid;
+            gap: 8px;
+        }
+
+        .text-area label {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .text-area textarea {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            resize: none;
+            min-height: 150px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: var(--background);
+        }
+
+        .text-area textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: end;
+        }
+
+        .language-selector {
+            display: grid;
+            gap: 8px;
+        }
+
+        .language-selector label {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .language-selector select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            background-color: var(--background);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .language-selector select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .translate-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            height: 44px;
+            white-space: nowrap;
+        }
+
+        .translate-btn:hover {
+            background-color: #3a56e0;
+        }
+
+        .translate-btn:active {
+            transform: scale(0.98);
+        }
+
+        .status {
+            height: 24px;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #e63946;
+            font-size: 0.875rem;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            .translate-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="translator-card">
+            <div class="header">
+                <h1>AI Language Translator for Travelers</h1>
+            </div>
+            <div class="content">
+                <div class="text-area">
+                    <label for="input-text">Text to translate</label>
+                    <textarea id="input-text" placeholder="Enter your text here..."></textarea>
+                </div>
+
+                <div class="controls">
+                    <div class="language-selector">
+                        <label for="target-language">Target language</label>
+                        <select id="target-language">
+                            <option value="en">English</option>
+                            <option value="hi">Hindi</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="ja">Japanese</option>
+                            <option value="zh-cn">Chinese (Simplified)</option>
+                            <option value="ar">Arabic</option>
+                            <option value="ru">Russian</option>
+                            <option value="it">Italian</option>
+                        </select>
+                    </div>
+                    <button id="translate-btn" class="translate-btn">
+                        <span class="btn-text">Translate</span>
+                        <span class="spinner"></span>
+                    </button>
+                </div>
+
+                <div class="status">
+                    <span id="char-count">0 characters</span>
+                </div>
+
+                <div class="text-area">
+                    <label for="output-text">Translation</label>
+                    <textarea id="output-text" readonly placeholder="Your translation will appear here..."></textarea>
+                    <div id="error-message" class="error"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const inputText = document.getElementById('input-text');
+        const targetLanguage = document.getElementById('target-language');
+        const translateBtn = document.getElementById('translate-btn');
+        const outputText = document.getElementById('output-text');
+        const errorMessage = document.getElementById('error-message');
+        const charCount = document.getElementById('char-count');
+        const spinner = document.querySelector('.spinner');
+        const btnText = document.querySelector('.btn-text');
+
+        // Update character count
+        inputText.addEventListener('input', () => {
+            const count = inputText.value.length;
+            charCount.textContent = `${count} character${count !== 1 ? 's' : ''}`;
+        });
+
+        // Translate function
+        translateBtn.addEventListener('click', async () => {
+            const text = inputText.value.trim();
+            const lang = targetLanguage.value;
+            
+            // Clear previous results and errors
+            outputText.value = '';
+            errorMessage.textContent = '';
+            
+            if (!text) {
+                errorMessage.textContent = 'Please enter some text to translate';
+                return;
+            }
+            
+            // Show loading state
+            translateBtn.disabled = true;
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
+            
+            try {
+                // Using Google Translate API
+                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // Extract translated text
+                let translatedText = '';
+                data[0].forEach(item => {
+                    if (item[0]) {
+                        translatedText += item[0];
+                    }
+                });
+                
+                outputText.value = translatedText;
+            } catch (error) {
+                errorMessage.textContent = 'Translation error: ' + error.message;
+            } finally {
+                // Hide loading state
+                translateBtn.disabled = false;
+                btnText.style.display = 'block';
+                spinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
